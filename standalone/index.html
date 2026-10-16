@@ -1,0 +1,2538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ramchandra and Sons Jewellers - Luxury Mobile App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-cream: #FAF7F2;
+      --card-bg: #FFFFFF;
+      --card-border: #EFECE6;
+      --card-border-subtle: #F3EFE9;
+      --text-dark: #1F1B17;
+      --text-muted: #8E877E;
+      --text-secondary: #5C554D;
+      --gold-primary: #C18B27;
+      --gold-dark: #8F661B;
+      --gold-soft-bg: #FAF3E6;
+      --gold-border: #E6CE9F;
+      --green-soft-bg: #EAF6ED;
+      --green-text: #1E7E34;
+      --red-soft-bg: #FCEAE9;
+      --red-text: #D32F2F;
+      --whatsapp-green: #1F9D55;
+      --font-serif: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #171513;
+      font-family: var(--font-sans);
+      color: var(--text-dark);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Device Mockup Shell */
+    .device-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 430px;
+      height: 900px;
+      max-height: 96vh;
+      background: var(--bg-cream);
+      border-radius: 46px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 12px #2A2623, 0 0 0 14px #4D453C;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Device Top Notch / Dynamic Island */
+    .device-notch-bar {
+      height: 38px;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1A1A1A;
+      z-index: 50;
+      background: var(--bg-cream);
+      flex-shrink: 0;
+    }
+    .device-island {
+      width: 110px;
+      height: 22px;
+      background: #111;
+      border-radius: 20px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 8px;
+    }
+    .notch-icons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 11px;
+    }
+
+    /* Top App Header */
+    .app-header {
+      padding: 10px 18px 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-cream);
+      flex-shrink: 0;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-monogram {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .brand-monogram svg {
+      width: 38px;
+      height: 38px;
+    }
+
+    .brand-title {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: #7A726A;
+      letter-spacing: -0.2px;
+      line-height: 1.15;
+    }
+    .brand-title span {
+      display: block;
+      font-size: 11px;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      color: var(--gold-primary);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-indicator {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #EAF6ED;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #22A048;
+      box-shadow: 0 0 0 2px #EAF6ED;
+      animation: pulseGreen 2s infinite ease-in-out;
+    }
+    @keyframes pulseGreen {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.25); opacity: 0.7; }
+    }
+
+    .header-icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #6C665F;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+      transition: all 0.2s ease;
+    }
+    .header-icon-btn:hover {
+      background: #F8F5EE;
+      color: var(--gold-dark);
+      border-color: var(--gold-border);
+    }
+
+    /* Content Area Scrollable */
+    .app-screen-container {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 6px 16px 20px 16px;
+      position: relative;
+      scroll-behavior: smooth;
+    }
+    .app-screen-container::-webkit-scrollbar {
+      width: 4px;
+    }
+    .app-screen-container::-webkit-scrollbar-thumb {
+      background: #E2DDD5;
+      border-radius: 4px;
+    }
+
+    /* Screens View Management */
+    .screen {
+      display: none;
+      animation: fadeIn 0.22s ease-out forwards;
+    }
+    .screen.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Section 1: RATES SCREEN */
+    .rates-card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+      background: #FFFFFF;
+      border-radius: 24px;
+      padding: 16px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+
+    .rate-row-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid #FAF7F2;
+    }
+    .rate-row-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .rate-row-item:first-child {
+      padding-top: 0;
+    }
+
+    .rate-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #27231F;
+      letter-spacing: -0.1px;
+    }
+
+    .rate-right-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .rate-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1F1B17;
+      letter-spacing: -0.2px;
+      font-variant-numeric: tabular-nums;
+    }
+    .rate-price.red-accent {
+      color: #B42318;
+    }
+
+    .rate-pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .rate-pill-badge.green-pill {
+      background: var(--green-soft-bg);
+      color: var(--green-text);
+    }
+    .rate-pill-badge.plain-pill {
+      background: transparent;
+      color: var(--green-text);
+      padding: 2px 4px;
+    }
+    .rate-pill-badge.red-pill {
+      background: var(--red-soft-bg);
+      color: var(--red-text);
+    }
+
+    /* Spread Table Card */
+    .spread-table-card {
+      background: #FFFFFF;
+      border-radius: 24px;
+      padding: 18px 16px;
+      border: 1px solid var(--card-border);
+      margin-bottom: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+
+    .spread-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 10px;
+    }
+    .spread-table th {
+      font-size: 13px;
+      font-weight: 600;
+      color: #8C867F;
+      padding-bottom: 6px;
+      text-align: left;
+    }
+    .spread-table th:nth-child(2),
+    .spread-table th:nth-child(3) {
+      text-align: center;
+    }
+
+    .spread-table td {
+      vertical-align: middle;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .spread-table td.source-cell {
+      color: #27231F;
+      font-weight: 600;
+      width: 32%;
+    }
+
+    .spread-pill {
+      display: inline-block;
+      width: 95px;
+      padding: 5px 0;
+      text-align: center;
+      border-radius: 6px;
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      font-variant-numeric: tabular-nums;
+    }
+    .spread-pill.soft-red {
+      background: #FCEAE9;
+      color: #C93333;
+    }
+    .spread-pill.soft-green {
+      background: #EAF6ED;
+      color: #1E7E34;
+    }
+    .spread-pill.plain-inr {
+      background: transparent;
+      color: #1F1B17;
+      font-size: 14.5px;
+      font-weight: 700;
+    }
+
+    /* Disclaimer Card */
+    .disclaimer-card {
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 14px 16px;
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .disclaimer-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid #A87A2B;
+      color: #A87A2B;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: var(--font-serif);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .disclaimer-text {
+      font-size: 13.5px;
+      line-height: 1.35;
+      color: #4A443E;
+    }
+    .disclaimer-text strong {
+      display: block;
+      color: #1A1714;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    /* Market Update Ticker Meta */
+    .market-meta-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 6px;
+      font-size: 11.5px;
+      color: #8C847A;
+    }
+    .refresh-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--gold-dark);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Section 2: GALLERY SCREEN */
+    .gallery-header-section {
+      margin-bottom: 20px;
+      padding-top: 4px;
+    }
+    .gallery-title {
+      font-family: var(--font-serif);
+      font-size: 34px;
+      font-weight: 600;
+      color: #1C1917;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .gallery-gold-bar {
+      width: 52px;
+      height: 2px;
+      background: var(--gold-primary);
+      margin-bottom: 12px;
+      border-radius: 2px;
+    }
+    .gallery-subtitle {
+      font-size: 14.5px;
+      color: #5E5750;
+      font-weight: 500;
+    }
+
+    /* Category Cards */
+    .category-cards-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .category-card {
+      position: relative;
+      background: #FFFFFF;
+      border-radius: 28px;
+      border: 1px solid var(--gold-border);
+      height: 220px;
+      overflow: hidden;
+      display: flex;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(184, 134, 11, 0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .category-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(184, 134, 11, 0.12);
+    }
+    .category-card.silver-card {
+      border-color: #E2DFD8;
+    }
+
+    .category-card-content {
+      width: 50%;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      z-index: 2;
+    }
+    .category-card-title {
+      font-family: var(--font-serif);
+      font-size: 30px;
+      font-weight: 600;
+      color: #A36F1C;
+      margin-bottom: 8px;
+      line-height: 1.1;
+    }
+    .category-card.silver-card .category-card-title {
+      color: #2E2A25;
+    }
+
+    .category-card-desc {
+      font-size: 13px;
+      color: #5C554D;
+      line-height: 1.35;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    .category-explore-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #C18B27;
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 16px;
+      border-radius: 20px;
+      width: fit-content;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(193, 139, 39, 0.25);
+    }
+    .category-card.silver-card .category-explore-btn {
+      background: #807B75;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .category-cutout-image {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 58%;
+      clip-path: ellipse(100% 100% at 100% 50%);
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* Filter Chips Bar */
+    .filter-chips-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+    }
+    .filter-chips-bar::-webkit-scrollbar {
+      display: none;
+    }
+    .filter-chip {
+      padding: 6px 14px;
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #5C554D;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .filter-chip.active {
+      background: var(--gold-primary);
+      color: #FFFFFF;
+      border-color: var(--gold-primary);
+    }
+
+    /* Product Grid */
+    .products-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .product-grid-card {
+      background: #FFFFFF;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      transition: transform 0.2s ease;
+    }
+    .product-grid-card:hover {
+      transform: translateY(-2px);
+    }
+    .product-grid-img-wrap {
+      width: 100%;
+      height: 140px;
+      position: relative;
+      background: #F5F1EB;
+    }
+    .product-grid-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .product-purity-badge {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(4px);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #A36F1C;
+    }
+    .product-grid-info {
+      padding: 10px 12px 14px 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .product-grid-sku {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #9C948B;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    .product-grid-name {
+      font-family: var(--font-serif);
+      font-size: 14px;
+      font-weight: 600;
+      color: #24201D;
+      line-height: 1.25;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .product-grid-weight {
+      font-size: 12px;
+      font-weight: 600;
+      color: #55504A;
+    }
+
+    /* PRODUCT DETAIL VIEW */
+    .detail-top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0 12px 0;
+    }
+    .detail-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      color: #7A5B1D;
+      cursor: pointer;
+      max-width: 80%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .detail-share-btn {
+      background: none;
+      border: none;
+      color: #7A5B1D;
+      cursor: pointer;
+    }
+
+    .detail-hero-media {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #F3EFE9;
+      margin-bottom: 12px;
+    }
+    .detail-hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .tap-to-zoom-btn {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      background: rgba(30, 27, 24, 0.78);
+      backdrop-filter: blur(6px);
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 6px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .detail-thumbnails {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .detail-thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      cursor: pointer;
+    }
+    .detail-thumb.active {
+      border-color: var(--gold-primary);
+    }
+    .detail-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .detail-breadcrumb-row {
+      font-size: 12px;
+      color: #8C847B;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .detail-category-label {
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: #A36F1C;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .detail-product-title {
+      font-family: var(--font-serif);
+      font-size: 24px;
+      font-weight: 600;
+      color: #211D19;
+      line-height: 1.25;
+      margin-bottom: 12px;
+    }
+    .detail-description {
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: #554F48;
+      margin-bottom: 20px;
+    }
+
+    /* Specs Grid */
+    .specs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .spec-item-card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 12px 14px;
+      border: 1px solid var(--card-border);
+    }
+    .spec-item-card.full-width {
+      grid-column: span 2;
+    }
+    .spec-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #8E877E;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .spec-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #24201C;
+    }
+
+    .availability-card {
+      background: #FBF8F2;
+      border: 1px solid #ECE4D4;
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 8px;
+    }
+    .availability-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      color: #8E877E;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .availability-text {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #38322B;
+    }
+
+    .store-pricing-note {
+      font-size: 12px;
+      font-style: italic;
+      color: #8C847B;
+      text-align: center;
+      margin: 12px 0 20px 0;
+      font-family: var(--font-serif);
+    }
+
+    /* Sticky Action Bar on Detail */
+    .detail-sticky-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .btn-ask-whatsapp {
+      flex: 1;
+      background: var(--whatsapp-green);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(31, 157, 85, 0.25);
+    }
+    .btn-call-store {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: #FFFFFF;
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #26221E;
+    }
+
+    /* Recommendations Carousel */
+    .recommendations-header {
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: #8C847B;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .recommendations-row {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 24px;
+    }
+    .rec-card {
+      min-width: 140px;
+      width: 140px;
+      background: #FFFFFF;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .rec-img {
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+    }
+    .rec-name {
+      padding: 8px 10px 10px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.25;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Section 3: SETTINGS SCREEN */
+    .settings-brand-header {
+      padding: 6px 0 16px 0;
+    }
+    .settings-brand-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .settings-brand-title {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 700;
+      color: #2B2520;
+      line-height: 1.15;
+    }
+
+    .account-signin-card {
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 14px 16px;
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .account-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #F5E8CF;
+      color: #8C6219;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .account-text-group {
+      flex: 1;
+    }
+    .account-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #26211C;
+      margin-bottom: 2px;
+    }
+    .account-subtitle {
+      font-size: 12.5px;
+      color: #8C847B;
+    }
+
+    .settings-section-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #332D27;
+      margin: 16px 0 10px 0;
+    }
+
+    /* Quick Actions 3x2 Grid */
+    .quick-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .quick-action-card {
+      background: #FFFFFF;
+      border-radius: 18px;
+      padding: 16px 8px;
+      border: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+    .quick-action-card:hover {
+      border-color: var(--gold-border);
+      transform: translateY(-2px);
+    }
+    .quick-action-icon {
+      margin-bottom: 8px;
+      color: #7D6B4F;
+    }
+    .quick-action-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #27221E;
+      margin-bottom: 2px;
+    }
+    .quick-action-sub {
+      font-size: 10.5px;
+      color: #8C847B;
+    }
+
+    .social-actions-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .social-card {
+      background: #FFFFFF;
+      border-radius: 18px;
+      padding: 14px 10px;
+      border: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .social-icon {
+      color: #D62976;
+      margin-bottom: 6px;
+    }
+
+    /* Grouped Menu List Card */
+    .menu-grouped-card {
+      background: #FFFFFF;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .menu-item-row {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid #FAF7F2;
+      cursor: pointer;
+      gap: 12px;
+    }
+    .menu-item-row:last-child {
+      border-bottom: none;
+    }
+    .menu-item-icon-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #FAF3E6;
+      color: #8C6219;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .menu-item-content {
+      flex: 1;
+    }
+    .menu-item-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #26211C;
+    }
+    .menu-item-subtitle {
+      font-size: 12px;
+      color: #8C847B;
+      margin-top: 1px;
+    }
+
+    /* Switch Toggle */
+    .switch-toggle {
+      width: 44px;
+      height: 24px;
+      background: #D9D3CA;
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .switch-toggle.on {
+      background: var(--whatsapp-green);
+    }
+    .switch-thumb {
+      width: 20px;
+      height: 20px;
+      background: #FFFFFF;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .switch-toggle.on .switch-thumb {
+      transform: translateX(20px);
+    }
+
+    .settings-footer-tagline {
+      text-align: center;
+      font-family: var(--font-serif);
+      font-style: italic;
+      color: #A39B90;
+      font-size: 13.5px;
+      margin: 18px 0 24px 0;
+    }
+
+    /* Section 4: ADMIN CMS SCREEN */
+    .admin-card {
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 18px;
+      border: 1px solid var(--card-border);
+      margin-bottom: 16px;
+    }
+    .admin-input-group {
+      margin-bottom: 14px;
+    }
+    .admin-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #4A443E;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .admin-input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid #DFD9CF;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      background: #FAF7F2;
+    }
+    .admin-input:focus {
+      border-color: var(--gold-primary);
+      background: #FFFFFF;
+    }
+    .btn-admin-save {
+      width: 100%;
+      background: var(--gold-primary);
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 14.5px;
+      padding: 12px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(193, 139, 39, 0.25);
+    }
+
+    /* FIXED BOTTOM NAVIGATION BAR */
+    .bottom-nav-bar {
+      height: 68px;
+      background: var(--bg-cream);
+      border-top: 1px solid #ECE7DD;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 16px 8px 16px;
+      flex-shrink: 0;
+      z-index: 40;
+    }
+    .nav-tab-btn {
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #948C82;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.2s ease;
+      padding: 6px 16px;
+    }
+    .nav-tab-btn.active {
+      color: #B47C1C;
+    }
+    .nav-tab-btn svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* FULLSCREEN LIGHTBOX MODAL */
+    .lightbox-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(14, 12, 10, 0.95);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 20px;
+    }
+    .lightbox-modal.open {
+      display: flex;
+    }
+    .lightbox-close-btn {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: #FFFFFF;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .lightbox-img {
+      max-width: 90%;
+      max-height: 80vh;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+      transition: transform 0.2s ease;
+    }
+    .lightbox-hint {
+      color: #C5BFB5;
+      font-size: 13px;
+      margin-top: 16px;
+    }
+
+    /* Desktop Preview Controls */
+    .desktop-toolbar {
+      position: fixed;
+      top: 16px;
+      left: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 999;
+    }
+    .toolbar-chip {
+      background: #2D2823;
+      color: #E2DDD5;
+      border: 1px solid #4D453C;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .toolbar-chip:hover {
+      background: #3D3630;
+      color: #FFFFFF;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Desktop Top Controls for Testing & Admin Access -->
+  <div class="desktop-toolbar">
+    <div class="toolbar-chip" onclick="toggleAdminPanel()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Admin CMS
+    </div>
+    <div class="toolbar-chip" onclick="triggerMarketVolatility()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      Simulate Rate Pulse
+    </div>
+  </div>
+
+  <!-- Mobile Device Mockup Frame -->
+  <div class="device-wrapper" id="deviceFrame">
+    
+    <!-- Top Notch / Status -->
+    <div class="device-notch-bar">
+      <span id="deviceClock">9:06</span>
+      <div class="device-island"></div>
+      <div class="notch-icons">
+        <span>5G</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z"/></svg>
+        <span>98%</span>
+      </div>
+    </div>
+
+    <!-- App Header Bar -->
+    <header class="app-header" id="mainAppHeader">
+      <div class="brand-group">
+        <div class="brand-monogram">
+          <!-- Monogram Logo RSJ in rose gold -->
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="#C59A27" stroke-width="1.8" opacity="0.3"/>
+            <path d="M32 30 C32 24, 45 22, 54 26 C62 30, 62 42, 52 46 C64 50, 66 66, 52 74 C42 80, 30 76, 30 70" stroke="#B8860B" stroke-width="3" stroke-linecap="round"/>
+            <path d="M48 24 L48 76" stroke="#A87A2B" stroke-width="3" stroke-linecap="round"/>
+            <path d="M68 32 C60 30, 48 38, 56 48 C64 58, 52 68, 44 68" stroke="#D4AF37" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          Ramchandra and Sons
+          <span>Jewellers · Kasganj</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Live status green pulsing indicator -->
+        <div class="status-indicator" onclick="triggerMarketVolatility()" title="Market Live • Click to refresh">
+          <div class="status-dot"></div>
+        </div>
+
+        <!-- Settings shortcut button -->
+        <button class="header-icon-btn" onclick="navigateToTab('settings')" title="Settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Scrollable Screen Content Container -->
+    <main class="app-screen-container" id="screenContainer">
+
+      <!-- 1. RATES SCREEN -->
+      <section class="screen active" id="ratesScreen">
+        
+        <!-- Live Bullion Rate Cards List -->
+        <div class="rates-card-list" id="ratesCardList">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Bid / Ask Spread Table Card -->
+        <div class="spread-table-card">
+          <table class="spread-table">
+            <thead>
+              <tr>
+                <th style="width: 34%;">Source</th>
+                <th>Bid</th>
+                <th>Ask</th>
+              </tr>
+            </thead>
+            <tbody id="spreadTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Store Notice / Disclaimer Container -->
+        <div class="disclaimer-card">
+          <div class="disclaimer-icon">i</div>
+          <div class="disclaimer-text" id="disclaimerNoticeText">
+            Indicative rates only. Confirm at store.
+            <strong>We don’t sell bullion.</strong>
+          </div>
+        </div>
+
+        <!-- Realtime WebSocket / polling meta indicator -->
+        <div class="market-meta-bar">
+          <span id="rateLastUpdatedText">Real-time ticker connected</span>
+          <span class="refresh-badge" onclick="triggerMarketVolatility()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Refresh
+          </span>
+        </div>
+
+      </section>
+
+      <!-- 2. GALLERY SCREEN -->
+      <section class="screen" id="galleryScreen">
+        
+        <!-- Category Hub View -->
+        <div id="galleryHubView">
+          <div class="gallery-header-section">
+            <h1 class="gallery-title">Gallery</h1>
+            <div class="gallery-gold-bar"></div>
+            <p class="gallery-subtitle">Explore our exquisite collections</p>
+          </div>
+
+          <!-- Category Preview Cards -->
+          <div class="category-cards-list">
+            
+            <!-- Gold Category Card -->
+            <div class="category-card" onclick="openCategoryCatalog('Gold')">
+              <div class="category-card-content">
+                <h2 class="category-card-title">Gold</h2>
+                <p class="category-card-desc">Browse the Ramchandra and Sons Gold collection</p>
+                <button class="category-explore-btn">
+                  Explore Gold
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+              </div>
+              <div class="category-cutout-image" style="background-image: url('https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=800&q=85');"></div>
+            </div>
+
+            <!-- Silver Category Card -->
+            <div class="category-card silver-card" onclick="openCategoryCatalog('Silver')">
+              <div class="category-card-content">
+                <h2 class="category-card-title">Silver</h2>
+                <p class="category-card-desc">Browse the Ramchandra and Sons Silver collection</p>
+                <button class="category-explore-btn">
+                  Explore Silver
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+              </div>
+              <div class="category-cutout-image" style="background-image: url('https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?auto=format&fit=crop&w=800&q=85');"></div>
+            </div>
+
+            <!-- Diamond Category Card -->
+            <div class="category-card" onclick="openCategoryCatalog('Diamond')">
+              <div class="category-card-content">
+                <h2 class="category-card-title">Diamond</h2>
+                <p class="category-card-desc">Solitaires, bridal cuts, and fine diamond jewellery</p>
+                <button class="category-explore-btn" style="background: #2563EB;">
+                  Explore Diamonds
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+              </div>
+              <div class="category-cutout-image" style="background-image: url('https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=800&q=85');"></div>
+            </div>
+
+            <!-- Bridal Heritage Card -->
+            <div class="category-card" onclick="openCategoryCatalog('Bridal')">
+              <div class="category-card-content">
+                <h2 class="category-card-title" style="color: #9F1239;">Bridal</h2>
+                <p class="category-card-desc">Magnificent bridal sets for your once-in-a-lifetime moments</p>
+                <button class="category-explore-btn" style="background: #9F1239;">
+                  Explore Bridal
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+              </div>
+              <div class="category-cutout-image" style="background-image: url('https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=800&q=85');"></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Product Catalog Grid View (Filtered) -->
+        <div id="galleryCatalogView" style="display: none;">
+          <div class="detail-top-nav">
+            <button class="detail-back-btn" onclick="backToCategoryHub()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+              <span id="catalogCategoryTitle">All Jewellery</span>
+            </button>
+          </div>
+
+          <!-- Filter chips -->
+          <div class="filter-chips-bar" id="catalogFilterChips">
+            <div class="filter-chip active" onclick="applyCatalogFilter('all')">All</div>
+            <div class="filter-chip" onclick="applyCatalogFilter('22K')">22K Gold</div>
+            <div class="filter-chip" onclick="applyCatalogFilter('18K')">18K Gold</div>
+            <div class="filter-chip" onclick="applyCatalogFilter('14K')">14K Gold</div>
+            <div class="filter-chip" onclick="applyCatalogFilter('925 Silver')">925 Silver</div>
+          </div>
+
+          <!-- Product Grid -->
+          <div class="products-grid" id="productsGridContainer">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- 3. PRODUCT DETAIL SCREEN -->
+      <section class="screen" id="productDetailScreen">
+        
+        <!-- Top Nav & Breadcrumb -->
+        <div class="detail-top-nav">
+          <button class="detail-back-btn" onclick="backFromDetail()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            <span id="detailNavBackText">Violet Collar Necklace Set...</span>
+          </button>
+          <button class="detail-share-btn" onclick="shareCurrentProduct()" title="Share Product">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </button>
+        </div>
+
+        <!-- Full Bleed Hero Media Carousel -->
+        <div class="detail-hero-media">
+          <img id="detailHeroImage" class="detail-hero-img" src="" alt="Jewellery Design">
+          <button class="tap-to-zoom-btn" onclick="openLightbox()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            TAP TO ZOOM
+          </button>
+        </div>
+
+        <!-- Thumbnail Strip -->
+        <div class="detail-thumbnails" id="detailThumbnailsStrip">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Breadcrumb / Index -->
+        <div class="detail-breadcrumb-row" id="detailIndexText">Item 1 of 231</div>
+        <div class="detail-category-label" id="detailCategoryLabel">NECKLACES</div>
+
+        <!-- Title & Narrative -->
+        <h1 class="detail-product-title" id="detailProductTitle">Violet Collar Necklace Set with Pink Floral Accent</h1>
+        <p class="detail-description" id="detailProductDescription">
+          Violet multi-row collar necklace with clear leaf-like center links, an asymmetric pink focal motif and warm-gold branch accents, with matching drop earrings.
+        </p>
+
+        <!-- Item Specifications Grid -->
+        <div class="specs-grid">
+          <div class="spec-item-card">
+            <div class="spec-label">REFERENCE</div>
+            <div class="spec-value" id="specReference">RSJ-NK-033</div>
+          </div>
+          <div class="spec-item-card">
+            <div class="spec-label">CATEGORY</div>
+            <div class="spec-value" id="specCategory">Necklaces</div>
+          </div>
+          <div class="spec-item-card">
+            <div class="spec-label">COLLECTION</div>
+            <div class="spec-value" id="specCollection">Gold</div>
+          </div>
+          <div class="spec-item-card">
+            <div class="spec-label">GENDER</div>
+            <div class="spec-value" id="specGender">Female</div>
+          </div>
+          <div class="spec-item-card full-width">
+            <div class="spec-label">DETAILS</div>
+            <div class="spec-value" id="specDetails">Violet Collar Necklace Set with Pink Floral Accent</div>
+          </div>
+          <div class="spec-item-card">
+            <div class="spec-label">GOLD PURITY</div>
+            <div class="spec-value" id="specGoldPurity">14K</div>
+          </div>
+          <div class="spec-item-card">
+            <div class="spec-label">GROSS WEIGHT</div>
+            <div class="spec-value" id="specGrossWeight">103.840 g</div>
+          </div>
+          <div class="spec-item-card">
+            <div class="spec-label">NET GOLD WEIGHT</div>
+            <div class="spec-value" id="specNetGoldWeight">83.620 g</div>
+          </div>
+          <div class="spec-item-card">
+            <div class="spec-label">DIAMOND WEIGHT</div>
+            <div class="spec-value" id="specDiamondWeight">15.03 ct</div>
+          </div>
+          <div class="spec-item-card full-width">
+            <div class="spec-label">COLOURED-STONE WEIGHT</div>
+            <div class="spec-value" id="specColouredStoneWeight">86.07 ct</div>
+          </div>
+        </div>
+
+        <!-- Availability Notice Card -->
+        <div class="availability-card">
+          <div class="availability-label">AVAILABILITY</div>
+          <div class="availability-text" id="specAvailability">Contact the showroom to confirm availability.</div>
+        </div>
+
+        <!-- Store Pricing Note -->
+        <div class="store-pricing-note">
+          Contact the showroom for current pricing and customised specifications.
+        </div>
+
+        <!-- Sticky / Prominent Action Bar -->
+        <div class="detail-sticky-bar">
+          <button class="btn-ask-whatsapp" onclick="askOnWhatsAppCurrentProduct()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+            </svg>
+            Ask on WhatsApp
+          </button>
+          <button class="btn-call-store" onclick="callStoreDirectly()" title="Call Store">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </button>
+        </div>
+
+        <!-- You May Also Like Horizontal Carousel -->
+        <div class="recommendations-header">YOU MAY ALSO LIKE</div>
+        <div class="recommendations-row" id="recommendationsRow">
+          <!-- Populated dynamically -->
+        </div>
+
+      </section>
+
+      <!-- 4. SETTINGS & STORE PROFILE SCREEN -->
+      <section class="screen" id="settingsScreen">
+        
+        <!-- Brand Header & Insignia -->
+        <div class="settings-brand-header">
+          <div class="settings-brand-row">
+            <div class="brand-monogram" style="width: 48px; height: 48px;">
+              <svg viewBox="0 0 100 100" fill="none">
+                <circle cx="50" cy="50" r="46" stroke="#C59A27" stroke-width="2" opacity="0.3"/>
+                <path d="M32 30 C32 24, 45 22, 54 26 C62 30, 62 42, 52 46 C64 50, 66 66, 52 74 C42 80, 30 76, 30 70" stroke="#B8860B" stroke-width="3.5" stroke-linecap="round"/>
+                <path d="M48 24 L48 76" stroke="#A87A2B" stroke-width="3.5" stroke-linecap="round"/>
+                <path d="M68 32 C60 30, 48 38, 56 48 C64 58, 52 68, 44 68" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="settings-brand-title">Ramchandra and Sons Jewellers</h2>
+              <p style="font-size: 12px; color: #8E877E; margin-top: 2px;">Heritage Bullion & Fine Jewellery Since 1952</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Account Banner -->
+        <div class="account-signin-card" onclick="alert('Personalised Rates & VIP Customer Portal\n\nLogin with phone OTP to access custom booking margins and saved items.')">
+          <div class="account-avatar">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="account-text-group">
+            <div class="account-title">Sign in to Ramchandra & Sons</div>
+            <div class="account-subtitle">View your personalised rates</div>
+          </div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B0A89F" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+
+        <!-- Quick Actions Grid -->
+        <div class="settings-section-title">Quick Actions</div>
+        <div class="quick-actions-grid">
+          
+          <a class="quick-action-card" href="tel:+915744245980">
+            <div class="quick-action-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div class="quick-action-name">Call Store</div>
+            <div class="quick-action-sub">05744-245980</div>
+          </a>
+
+          <div class="quick-action-card" onclick="openGeneralWhatsApp()">
+            <div class="quick-action-icon" style="color: var(--whatsapp-green);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+              </svg>
+            </div>
+            <div class="quick-action-name">WhatsApp</div>
+            <div class="quick-action-sub">Open chat</div>
+          </div>
+
+          <a class="quick-action-card" href="https://maps.google.com/?q=Main+Market+Near+Ghanta+Ghar+Kasganj" target="_blank">
+            <div class="quick-action-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div class="quick-action-name">Directions</div>
+            <div class="quick-action-sub">Main Market</div>
+          </a>
+
+        </div>
+
+        <!-- Social Media 2-card Row -->
+        <div class="social-actions-row">
+          <a class="social-card" href="https://instagram.com/ramchandra_sons" target="_blank">
+            <div class="social-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </div>
+            <div class="quick-action-name">Instagram</div>
+            <div class="quick-action-sub">@ramchandra_sons</div>
+          </a>
+
+          <a class="social-card" href="https://instagram.com/rsj_heritage" target="_blank">
+            <div class="social-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </div>
+            <div class="quick-action-name">Instagram</div>
+            <div class="quick-action-sub">@rsj_heritage</div>
+          </a>
+        </div>
+
+        <!-- Notifications -->
+        <div class="settings-section-title">Notifications</div>
+        <div class="menu-grouped-card">
+          <div class="menu-item-row" onclick="togglePushNotifications()">
+            <div class="menu-item-icon-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </div>
+            <div class="menu-item-content">
+              <div class="menu-item-title">New stock alerts</div>
+              <div class="menu-item-subtitle" id="notificationStatusSub">Active · Instant alerts on new jewellery & rate drops</div>
+            </div>
+            <div class="switch-toggle on" id="pushNotificationToggle">
+              <div class="switch-thumb"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Store / Visit -->
+        <div class="settings-section-title">Store / Visit</div>
+        <div class="menu-grouped-card">
+          <a class="menu-item-row" href="https://maps.google.com/?q=Main+Market+Near+Ghanta+Ghar+Kasganj" target="_blank" style="text-decoration: none; color: inherit;">
+            <div class="menu-item-icon-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div class="menu-item-content">
+              <div class="menu-item-title">Address</div>
+              <div class="menu-item-subtitle">Main Market, Near Ghanta Ghar, Kasganj</div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B0A89F" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+
+          <a class="menu-item-row" href="https://ramchandraandsons.com" target="_blank" style="text-decoration: none; color: inherit;">
+            <div class="menu-item-icon-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <div class="menu-item-content">
+              <div class="menu-item-title">Website</div>
+              <div class="menu-item-subtitle">ramchandraandsons.com</div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B0A89F" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+        </div>
+
+        <!-- About List -->
+        <div class="settings-section-title">About</div>
+        <div class="menu-grouped-card">
+          <div class="menu-item-row" onclick="alert('Rate Disclaimer:\n\nBullion prices shown are indicative MCX and bank rates refreshed in real-time. For bespoke hallmarked jewellery purchases, making charges, hallmark fees and applicable taxes are calculated at our Kasganj showroom. Ramchandra and Sons Jewellers does not trade bullion or cash gold.')">
+            <div class="menu-item-icon-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <div class="menu-item-content">
+              <div class="menu-item-title">Rate disclaimer</div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B0A89F" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+
+          <div class="menu-item-row" onclick="alert('Privacy Policy:\n\nYour data is confidential. We do not sell or share customer contact details.')">
+            <div class="menu-item-icon-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="menu-item-content">
+              <div class="menu-item-title">Privacy policy</div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B0A89F" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+
+          <div class="menu-item-row" onclick="alert('Terms of Service:\n\nAll jewellery certified with BIS Hallmark 916 / 750 / 585. Custom orders require 25% booking advance.')">
+            <div class="menu-item-icon-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="menu-item-content">
+              <div class="menu-item-title">Terms of service</div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B0A89F" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+
+          <div class="menu-item-row">
+            <div class="menu-item-icon-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </div>
+            <div class="menu-item-content">
+              <div class="menu-item-title">App version</div>
+              <div class="menu-item-subtitle">1.0.24 (38) · Stable</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-footer-tagline">
+          Crafted with care · Main Market, Kasganj
+        </div>
+
+      </section>
+
+      <!-- 5. ADMIN / CMS WORKFLOW -->
+      <section class="screen" id="adminScreen">
+        <div class="detail-top-nav">
+          <button class="detail-back-btn" onclick="navigateToTab('rates')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            <span>Exit Admin Mode</span>
+          </button>
+        </div>
+
+        <h2 style="font-family: var(--font-serif); font-size: 24px; margin-bottom: 6px;">Store Manager CMS</h2>
+        <p style="font-size: 13px; color: #736C63; margin-bottom: 16px;">Publish new jewellery designs, adjust live market margins, and update store tickers instantly.</p>
+
+        <!-- Free Live API Ingestion Test Card -->
+        <div class="admin-card" style="border: 1.5px solid var(--gold-border); background: linear-gradient(135deg, #FFFDF9 0%, #F5EFE6 100%);">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <h3 style="font-size: 16px; color: var(--gold-dark); margin: 0;">🌐 Free Live Market API</h3>
+            <span style="font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 999px; background: #EAF6ED; color: #1E6B37;">100% Free · No Key</span>
+          </div>
+          <p style="font-size: 12px; color: #666; margin-bottom: 12px; line-height: 1.4;">
+            Fetch real spot rates from <strong>gold-api.com</strong> (XAU/INR & XAG/INR). Click below to fetch and apply directly to your Kasganj showroom rates.
+          </p>
+          <div id="liveApiStatusBanner" style="font-size: 12px; font-weight: 500; color: #444; background: #FFF; padding: 8px 12px; border-radius: 8px; border: 1px solid #E5E0D8; margin-bottom: 12px;">
+            Ready to test live feed.
+          </div>
+          <button id="btnFetchFreeApi" class="btn-admin-save" style="background: #23201C; color: #FFF;" onclick="fetchAndApplyFreeLiveApi()">
+            ⚡ Fetch & Populate Live Market Rates
+          </button>
+        </div>
+
+        <!-- Bullion Rates Live Margins Adjuster -->
+        <div class="admin-card">
+          <h3 style="font-size: 16px; margin-bottom: 12px; color: var(--gold-dark);">Live Rates Adjuster</h3>
+          <div class="admin-input-group">
+            <label class="admin-label">Gold 999 (₹ / 10gm)</label>
+            <input type="number" class="admin-input" id="adminGold999Input" value="150713">
+          </div>
+          <div class="admin-input-group">
+            <label class="admin-label">Silver Bank (₹ / 1kg)</label>
+            <input type="number" class="admin-input" id="adminSilverBankInput" value="216281">
+          </div>
+          <div class="admin-input-group">
+            <label class="admin-label">Kasganj Mohar (₹ / 10gm)</label>
+            <input type="number" class="admin-input" id="adminKasganjMoharInput" value="214118">
+          </div>
+          <div class="admin-input-group">
+            <label class="admin-label">Silver Coin 10gm (₹)</label>
+            <input type="number" class="admin-input" id="adminSilverCoinInput" value="2215">
+          </div>
+          <div class="admin-input-group">
+            <label class="admin-label">Store Disclaimer Text</label>
+            <input type="text" class="admin-input" id="adminDisclaimerInput" value="Indicative rates only. Confirm at store. We don’t sell bullion.">
+          </div>
+          <button class="btn-admin-save" onclick="saveAdminRates()">Broadcast Rate Update</button>
+        </div>
+
+        <!-- Add New Jewellery Design Card -->
+        <div class="admin-card">
+          <h3 style="font-size: 16px; margin-bottom: 12px; color: var(--gold-dark);">Publish New Design</h3>
+          <div class="admin-input-group">
+            <label class="admin-label">Product Title</label>
+            <input type="text" class="admin-input" id="newProdTitle" placeholder="e.g. Royal Emerald Haar Set">
+          </div>
+          <div class="admin-input-group">
+            <label class="admin-label">SKU / Reference Code</label>
+            <input type="text" class="admin-input" id="newProdSku" placeholder="e.g. RSJ-NK-089">
+          </div>
+          <div class="admin-input-group">
+            <label class="admin-label">Category</label>
+            <select class="admin-input" id="newProdCategory">
+              <option value="Necklaces">Necklaces</option>
+              <option value="Gold">Gold</option>
+              <option value="Silver">Silver</option>
+              <option value="Diamond">Diamond</option>
+              <option value="Bridal">Bridal</option>
+            </select>
+          </div>
+          <div class="admin-input-group">
+            <label class="admin-label">Gold Purity</label>
+            <select class="admin-input" id="newProdPurity">
+              <option value="22K">22K</option>
+              <option value="18K">18K</option>
+              <option value="14K">14K</option>
+              <option value="925 Silver">925 Silver</option>
+            </select>
+          </div>
+          <div class="admin-input-group">
+            <label class="admin-label">Gross Weight (grams)</label>
+            <input type="number" step="0.001" class="admin-input" id="newProdGrossWeight" placeholder="e.g. 84.500">
+          </div>
+          <div class="admin-input-group">
+            <label class="admin-label">Net Gold Weight (grams)</label>
+            <input type="number" step="0.001" class="admin-input" id="newProdNetWeight" placeholder="e.g. 72.100">
+          </div>
+          <div class="admin-input-group">
+            <label class="admin-label">Diamond Weight (carats)</label>
+            <input type="number" step="0.01" class="admin-input" id="newProdDiamondWeight" placeholder="e.g. 8.40">
+          </div>
+          <div class="admin-input-group">
+            <label class="admin-label">Image URL</label>
+            <input type="url" class="admin-input" id="newProdImageUrl" placeholder="https://images.unsplash.com/...">
+          </div>
+          <div class="admin-input-group">
+            <label class="admin-label">Description</label>
+            <textarea class="admin-input" id="newProdDesc" rows="3" placeholder="Bespoke handcrafted piece..."></textarea>
+          </div>
+          <button class="btn-admin-save" style="background: #1F9D55;" onclick="publishNewJewelleryProduct()">Publish Jewellery Item</button>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Fixed Bottom Navigation Bar with 3 primary tabs -->
+    <nav class="bottom-nav-bar">
+      <!-- Rates Tab -->
+      <button class="nav-tab-btn active" id="tabRates" onclick="navigateToTab('rates')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+          <polyline points="17 6 23 6 23 12"></polyline>
+        </svg>
+        Rates
+      </button>
+
+      <!-- Gallery Tab -->
+      <button class="nav-tab-btn" id="tabGallery" onclick="navigateToTab('gallery')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+          <polyline points="21 15 16 10 5 21"></polyline>
+        </svg>
+        Gallery
+      </button>
+
+      <!-- Settings Tab -->
+      <button class="nav-tab-btn" id="tabSettings" onclick="navigateToTab('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        Settings
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- Fullscreen Lightbox Zoom Modal -->
+  <div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox()">
+    <button class="lightbox-close-btn" onclick="closeLightbox()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <img id="lightboxImage" class="lightbox-img" src="" alt="Zoomed Jewellery Detail" onclick="event.stopPropagation()">
+    <div class="lightbox-hint">Tap anywhere to close lightbox · Ramchandra and Sons Jewellers</div>
+  </div>
+
+  <!-- APPLICATION LOGIC & REAL-TIME STATE ENGINE -->
+  <script>
+    // Initial Bullion Rates & Spreads matching reference screenshot
+    let bullionRates = [
+      { id: 'gold-999', name: 'Gold 999', price: 150713, change: 1630, direction: 'up', badgeType: 'accent' },
+      { id: 'silver-bank', name: 'Silver Bank', price: 216281, change: 3732, direction: 'up', badgeType: 'green' },
+      { id: 'kasganj-mohar', name: 'Kasganj Mohar', price: 214118, change: 3694, direction: 'up', badgeType: 'green' },
+      { id: 'silver-coin-10gm', name: 'Silver Coin 10gm', price: 2215, change: 40, direction: 'up', badgeType: 'plain' }
+    ];
+
+    let spreads = [
+      { source: 'Silver', bid: '2,10,751', ask: '2,10,831', bidStatus: 'soft-red', askStatus: 'soft-green' },
+      { source: 'Gold', bid: '1,47,420', ask: '1,47,472', bidStatus: 'soft-green', askStatus: 'soft-red' },
+      { source: 'Gold ($)', bid: '4,153.99', ask: '4,154.31', bidStatus: 'soft-red', askStatus: 'soft-red' },
+      { source: 'Silver ($)', bid: '57.08', ask: '57.10', bidStatus: 'soft-red', askStatus: 'soft-red' },
+      { source: 'INR', bid: '95.05', ask: '95.09', isCurrency: true }
+    ];
+
+    // Catalog of jewellery products
+    let jewelleryProducts = [
+      {
+        id: 'rsj-nk-033',
+        sku: 'RSJ-NK-033',
+        title: 'Violet Collar Necklace Set with Pink Floral Accent',
+        category: 'Necklaces',
+        collection: 'Gold',
+        gender: 'Female',
+        goldPurity: '14K',
+        grossWeight: '103.840 g',
+        netGoldWeight: '83.620 g',
+        diamondWeight: '15.03 ct',
+        colouredStoneWeight: '86.07 ct',
+        description: 'Violet multi-row collar necklace with clear leaf-like center links, an asymmetric pink focal motif and warm-gold branch accents, with matching drop earrings.',
+        availability: 'Contact the showroom to confirm availability.',
+        images: [
+          'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1200&q=85',
+          'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=85',
+          'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1200&q=85'
+        ]
+      },
+      {
+        id: 'rsj-nk-034',
+        sku: 'RSJ-NK-034',
+        title: 'Teal Asymmetric Chevron Necklace Set',
+        category: 'Necklaces',
+        collection: 'Gold',
+        gender: 'Female',
+        goldPurity: '18K',
+        grossWeight: '92.450 g',
+        netGoldWeight: '74.200 g',
+        diamondWeight: '11.80 ct',
+        colouredStoneWeight: '62.15 ct',
+        description: 'Bespoke collar crafted in 18K yellow gold with cascading natural teal tourmalines and brilliant cut VVS diamonds with matching teardrop ear pendants.',
+        availability: 'Available in Showroom',
+        images: [
+          'https://images.unsplash.com/photo-1611591475155-426462615557?auto=format&fit=crop&w=1200&q=85',
+          'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1200&q=85'
+        ]
+      },
+      {
+        id: 'rsj-nk-035',
+        sku: 'RSJ-NK-035',
+        title: 'Green Cascade Floral Collar Necklace',
+        category: 'Necklaces',
+        collection: 'Gold',
+        gender: 'Female',
+        goldPurity: '18K',
+        grossWeight: '118.200 g',
+        netGoldWeight: '91.500 g',
+        diamondWeight: '18.25 ct',
+        colouredStoneWeight: '95.40 ct',
+        description: 'Intricate filigree and hand-set Zambian emerald leaves cascading over a diamond pave trellis.',
+        availability: 'Contact the showroom to confirm availability.',
+        images: [
+          'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1200&q=85',
+          'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1200&q=85'
+        ]
+      },
+      {
+        id: 'rsj-sl-009',
+        sku: 'RSJ-SL-009',
+        title: 'Heritage Embossed Silver Mayur Bowl',
+        category: 'Silver',
+        collection: 'Silver',
+        gender: 'Unisex',
+        goldPurity: '925 Silver',
+        grossWeight: '425.600 g',
+        netGoldWeight: '0 g',
+        diamondWeight: 'None',
+        colouredStoneWeight: 'None',
+        description: 'Solid 92.5 Sterling Silver ornamental centerpiece handcrafted by master silversmiths with embossed Mughal peacock motifs and fluted scallop rim.',
+        availability: 'Available in Showroom',
+        images: [
+          'https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?auto=format&fit=crop&w=1200&q=85',
+          'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1200&q=85'
+        ]
+      },
+      {
+        id: 'rsj-br-021',
+        sku: 'RSJ-BR-021',
+        title: 'Royal Kundan & Polki Bridal Haar Set',
+        category: 'Bridal',
+        collection: 'Bridal',
+        gender: 'Female',
+        goldPurity: '22K',
+        grossWeight: '185.320 g',
+        netGoldWeight: '142.800 g',
+        diamondWeight: '22.40 ct',
+        colouredStoneWeight: '45.10 ct',
+        description: 'Regal bridal set handcrafted in 22K hallmarked yellow gold featuring uncut syndicate polki diamonds and south sea pearls.',
+        availability: 'Made to Order',
+        images: [
+          'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1200&q=85',
+          'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1200&q=85'
+        ]
+      },
+      {
+        id: 'rsj-dm-014',
+        sku: 'RSJ-DM-014',
+        title: 'Solitaire Blossom Diamond Cocktail Ring',
+        category: 'Diamond',
+        collection: 'Diamond',
+        gender: 'Female',
+        goldPurity: '18K',
+        grossWeight: '9.850 g',
+        netGoldWeight: '8.900 g',
+        diamondWeight: '4.25 ct',
+        colouredStoneWeight: 'None',
+        description: 'GIA certified 2.50ct round brilliant centre diamond enveloped in a double halo of marquise-cut diamonds mounted in 18K white gold.',
+        availability: 'Available in Showroom',
+        images: [
+          'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1200&q=85',
+          'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=85'
+        ]
+      }
+    ];
+
+    let currentSelectedProduct = jewelleryProducts[0];
+    let currentCatalogFilter = 'all';
+    let currentHeroImageIndex = 0;
+    let pushNotificationsActive = true;
+
+    // Format Indian Number System (e.g., 1,50,713)
+    function formatINR(number) {
+      return Number(number).toLocaleString('en-IN');
+    }
+
+    // Render Bullion Rates Cards
+    function renderBullionRates() {
+      const container = document.getElementById('ratesCardList');
+      container.innerHTML = bullionRates.map(item => {
+        let priceHtml = '';
+        let badgeHtml = '';
+
+        const arrowSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px;"><polyline points="18 15 12 9 6 15" transform="${item.direction === 'up' ? '' : 'rotate(180 12 12)'}"></polyline></svg>`;
+
+        if (item.badgeType === 'accent') {
+          priceHtml = `<span class="rate-price red-accent">₹${formatINR(item.price)}</span>`;
+          badgeHtml = `<span class="rate-pill-badge plain-pill" style="color: #1E7E34;">${arrowSvg} ₹${formatINR(item.change)}</span>`;
+        } else if (item.badgeType === 'green') {
+          priceHtml = ``;
+          badgeHtml = `
+            <div class="rate-pill-badge green-pill">
+              <span>₹${formatINR(item.price)}</span>
+              ${arrowSvg}
+              <span>₹${formatINR(item.change)}</span>
+            </div>
+          `;
+        } else {
+          priceHtml = `<span class="rate-price">₹${formatINR(item.price)}</span>`;
+          badgeHtml = `<span class="rate-pill-badge plain-pill" style="color: #1E7E34;">${arrowSvg} ₹${formatINR(item.change)}</span>`;
+        }
+
+        return `
+          <div class="rate-row-item">
+            <span class="rate-name">${item.name}</span>
+            <div class="rate-right-group">
+              ${priceHtml}
+              ${badgeHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render Spread Table
+    function renderSpreadTable() {
+      const tbody = document.getElementById('spreadTableBody');
+      tbody.innerHTML = spreads.map(row => {
+        if (row.isCurrency) {
+          return `
+            <tr>
+              <td class="source-cell">${row.source}</td>
+              <td style="text-align: center;"><span class="spread-pill plain-inr">${row.bid}</span></td>
+              <td style="text-align: center;"><span class="spread-pill plain-inr">${row.ask}</span></td>
+            </tr>
+          `;
+        }
+        return `
+          <tr>
+            <td class="source-cell">${row.source}</td>
+            <td style="text-align: center;"><span class="spread-pill ${row.bidStatus}">${row.bid}</span></td>
+            <td style="text-align: center;"><span class="spread-pill ${row.askStatus}">${row.ask}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Tab Navigation
+    function navigateToTab(tabId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+
+      if (tabId === 'rates') {
+        document.getElementById('ratesScreen').classList.add('active');
+        document.getElementById('tabRates').classList.add('active');
+      } else if (tabId === 'gallery') {
+        document.getElementById('galleryScreen').classList.add('active');
+        document.getElementById('tabGallery').classList.add('active');
+        // By default show hub view
+        document.getElementById('galleryHubView').style.display = 'block';
+        document.getElementById('galleryCatalogView').style.display = 'none';
+      } else if (tabId === 'settings') {
+        document.getElementById('settingsScreen').classList.add('active');
+        document.getElementById('tabSettings').classList.add('active');
+      } else if (tabId === 'admin') {
+        document.getElementById('adminScreen').classList.add('active');
+      }
+      document.getElementById('screenContainer').scrollTop = 0;
+    }
+
+    // Gallery Category Exploration
+    function openCategoryCatalog(categoryName) {
+      document.getElementById('galleryHubView').style.display = 'none';
+      document.getElementById('galleryCatalogView').style.display = 'block';
+      document.getElementById('catalogCategoryTitle').textContent = `${categoryName} Collection`;
+      currentCatalogFilter = categoryName;
+      renderProductGrid();
+      document.getElementById('screenContainer').scrollTop = 0;
+    }
+
+    function backToCategoryHub() {
+      document.getElementById('galleryCatalogView').style.display = 'none';
+      document.getElementById('galleryHubView').style.display = 'block';
+      document.getElementById('screenContainer').scrollTop = 0;
+    }
+
+    function applyCatalogFilter(filter) {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      event.target.classList.add('active');
+      renderProductGrid(filter);
+    }
+
+    function renderProductGrid(filter = 'all') {
+      const container = document.getElementById('productsGridContainer');
+      const filtered = jewelleryProducts.filter(p => {
+        if (filter === 'all') return true;
+        return p.goldPurity === filter || p.category.toLowerCase() === filter.toLowerCase();
+      });
+
+      container.innerHTML = filtered.map(p => `
+        <div class="product-grid-card" onclick="viewProductDetail('${p.id}')">
+          <div class="product-grid-img-wrap">
+            <img class="product-grid-img" src="${p.images[0]}" alt="${p.title}">
+            <div class="product-purity-badge">${p.goldPurity}</div>
+          </div>
+          <div class="product-grid-info">
+            <div>
+              <div class="product-grid-sku">${p.sku}</div>
+              <h3 class="product-grid-name">${p.title}</h3>
+            </div>
+            <div class="product-grid-weight">${p.grossWeight}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // View Product Detail Screen
+    function viewProductDetail(productId) {
+      const product = jewelleryProducts.find(p => p.id === productId) || jewelleryProducts[0];
+      currentSelectedProduct = product;
+      currentHeroImageIndex = 0;
+
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('productDetailScreen').classList.add('active');
+
+      document.getElementById('detailNavBackText').textContent = product.title;
+      document.getElementById('detailHeroImage').src = product.images[0];
+      document.getElementById('detailProductTitle').textContent = product.title;
+      document.getElementById('detailCategoryLabel').textContent = product.category.toUpperCase();
+      document.getElementById('detailProductDescription').textContent = product.description;
+
+      document.getElementById('specReference').textContent = product.sku;
+      document.getElementById('specCategory').textContent = product.category;
+      document.getElementById('specCollection').textContent = product.collection;
+      document.getElementById('specGender').textContent = product.gender;
+      document.getElementById('specDetails').textContent = product.title;
+      document.getElementById('specGoldPurity').textContent = product.goldPurity;
+      document.getElementById('specGrossWeight').textContent = product.grossWeight;
+      document.getElementById('specNetGoldWeight').textContent = product.netGoldWeight;
+      document.getElementById('specDiamondWeight').textContent = product.diamondWeight;
+      document.getElementById('specColouredStoneWeight').textContent = product.colouredStoneWeight;
+      document.getElementById('specAvailability').textContent = product.availability;
+
+      // Render thumbnail strip
+      const thumbStrip = document.getElementById('detailThumbnailsStrip');
+      thumbStrip.innerHTML = product.images.map((img, i) => `
+        <div class="detail-thumb ${i === 0 ? 'active' : ''}" onclick="selectDetailThumbnail(${i})">
+          <img src="${img}" alt="thumbnail">
+        </div>
+      `).join('');
+
+      // Render recommendations
+      const recsRow = document.getElementById('recommendationsRow');
+      const recs = jewelleryProducts.filter(p => p.id !== product.id);
+      recsRow.innerHTML = recs.map(r => `
+        <div class="rec-card" onclick="viewProductDetail('${r.id}')">
+          <img class="rec-img" src="${r.images[0]}" alt="${r.title}">
+          <div class="rec-name">${r.title}</div>
+        </div>
+      `).join('');
+
+      document.getElementById('screenContainer').scrollTop = 0;
+    }
+
+    function selectDetailThumbnail(index) {
+      currentHeroImageIndex = index;
+      document.getElementById('detailHeroImage').src = currentSelectedProduct.images[index];
+      document.querySelectorAll('.detail-thumb').forEach((thumb, i) => {
+        thumb.classList.toggle('active', i === index);
+      });
+    }
+
+    function backFromDetail() {
+      navigateToTab('gallery');
+    }
+
+    // Lightbox Functionality
+    function openLightbox() {
+      const modal = document.getElementById('lightboxModal');
+      const img = document.getElementById('lightboxImage');
+      img.src = currentSelectedProduct.images[currentHeroImageIndex] || currentSelectedProduct.images[0];
+      modal.classList.add('open');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightboxModal').classList.remove('open');
+    }
+
+    // WhatsApp Deep Link Integration
+    function askOnWhatsAppCurrentProduct() {
+      const p = currentSelectedProduct;
+      const phone = "919837012345";
+      const message = `Hello Ramchandra and Sons Jewellers! 🕊️\n\nI am interested in:\n*${p.title}*\n• Ref Code / SKU: ${p.sku}\n• Gold Purity: ${p.goldPurity}\n• Gross Weight: ${p.grossWeight}\n• Net Weight: ${p.netGoldWeight}\n\nPlease share availability, making charges and showroom viewing details.`;
+      const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank');
+    }
+
+    function openGeneralWhatsApp() {
+      const phone = "919837012345";
+      const message = `Namaste Ramchandra and Sons Jewellers! I would like to inquire about current jewellery collections and showroom appointments.`;
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+    }
+
+    function callStoreDirectly() {
+      window.location.href = "tel:+915624099980";
+    }
+
+    function shareCurrentProduct() {
+      if (navigator.share) {
+        navigator.share({
+          title: currentSelectedProduct.title,
+          text: `Take a look at this exquisite design by Ramchandra and Sons Jewellers: ${currentSelectedProduct.title} (${currentSelectedProduct.sku})`,
+          url: window.location.href
+        }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(`${currentSelectedProduct.title} (SKU: ${currentSelectedProduct.sku}) - Ramchandra and Sons Jewellers`);
+        alert('Product details copied to clipboard!');
+      }
+    }
+
+    // Notifications Toggle
+    function togglePushNotifications() {
+      pushNotificationsActive = !pushNotificationsActive;
+      const toggle = document.getElementById('pushNotificationToggle');
+      const sub = document.getElementById('notificationStatusSub');
+      toggle.classList.toggle('on', pushNotificationsActive);
+      sub.textContent = pushNotificationsActive 
+        ? 'Active · Instant alerts on new jewellery & rate drops' 
+        : 'Paused · No push alerts';
+    }
+
+    // -------------------------------------------------------------
+    // HYBRID RATE CALCULATION ENGINE (Phase 1 Specifications)
+    // -------------------------------------------------------------
+    let marketBaseRates = {
+      goldUsd: 4153.99,
+      silverUsd: 57.08,
+      goldInrBase: 147420.00,
+      silverInrBase: 210751.00,
+      usdInr: 86.50
+    };
+
+    let rateConfigurations = {
+      gold999Offset: 3293.00,        // Formula 1: Final Gold 999 = base_gold_inr + gold_999_offset
+      silverBankOffset: 5530.00,     // Formula 2: Final Silver Bank = base_silver_inr + silver_bank_offset
+      localMoharOffset: -214118 + 150713, // Local Kasganj market offset calculation
+      silverCoin10gMargin: 52.00,    // Formula 4: Silver Coin 10gm = (Silver Bank / 100) + silver_coin_10g_margin
+      bidAskSpread: 80.00,           // Spread around base price
+      isManualOverride: false,
+      overrideGoldRate: null,
+      overrideSilverRate: null,
+      storeNotice: 'Indicative rates only. Confirm at store. We don’t sell bullion.'
+    };
+
+    let previousRatesMap = {};
+
+    function computeHybridRates() {
+      // 1. Final Gold 999
+      let finalGold;
+      if (rateConfigurations.isManualOverride && rateConfigurations.overrideGoldRate) {
+        finalGold = rateConfigurations.overrideGoldRate;
+      } else {
+        finalGold = Math.round(marketBaseRates.goldInrBase + rateConfigurations.gold999Offset);
+      }
+
+      // 2. Final Silver Bank
+      let finalSilver;
+      if (rateConfigurations.isManualOverride && rateConfigurations.overrideSilverRate) {
+        finalSilver = rateConfigurations.overrideSilverRate;
+      } else {
+        finalSilver = Math.round(marketBaseRates.silverInrBase + rateConfigurations.silverBankOffset);
+      }
+
+      // 3. Kasganj Mohar = Final Gold 999 - local_mohar_offset
+      let finalMohar = Math.round(finalGold - rateConfigurations.localMoharOffset);
+
+      // 4. Silver Coin 10gm = (Final Silver Bank / 100) + silver_coin_10g_margin
+      let finalCoin = Math.round((finalSilver / 100) + rateConfigurations.silverCoin10gMargin);
+
+      // Track movement deltas
+      function trackDelta(id, current, defaultPrevDiff) {
+        const prev = previousRatesMap[id] !== undefined ? previousRatesMap[id] : (current - defaultPrevDiff);
+        const diff = Math.abs(current - prev);
+        const direction = current >= prev ? 'up' : 'down';
+        previousRatesMap[id] = current;
+        return { current, diff, direction };
+      }
+
+      const gMovement = trackDelta('gold-999', finalGold, 1630);
+      const sMovement = trackDelta('silver-bank', finalSilver, 3732);
+      const mMovement = trackDelta('kasganj-mohar', finalMohar, 3694);
+      const cMovement = trackDelta('silver-coin-10gm', finalCoin, 40);
+
+      // Update bullionRates array
+      bullionRates = [
+        { id: 'gold-999', name: 'Gold 999', price: gMovement.current, change: gMovement.diff, direction: gMovement.direction, badgeType: 'accent' },
+        { id: 'silver-bank', name: 'Silver Bank', price: sMovement.current, change: sMovement.diff, direction: sMovement.direction, badgeType: 'green' },
+        { id: 'kasganj-mohar', name: 'Kasganj Mohar', price: mMovement.current, change: mMovement.diff, direction: mMovement.direction, badgeType: 'green' },
+        { id: 'silver-coin-10gm', name: 'Silver Coin 10gm', price: cMovement.current, change: cMovement.diff, direction: cMovement.direction, badgeType: 'plain' }
+      ];
+
+      // Update Spreads using configured bid_ask_spread
+      const silverBid = Math.round(marketBaseRates.silverInrBase);
+      const silverAsk = Math.round(marketBaseRates.silverInrBase + rateConfigurations.bidAskSpread);
+      const goldBid = Math.round(marketBaseRates.goldInrBase);
+      const goldAsk = Math.round(marketBaseRates.goldInrBase + 52);
+
+      spreads = [
+        { source: 'Silver', bid: formatINR(silverBid), ask: formatINR(silverAsk), bidStatus: 'soft-red', askStatus: 'soft-green' },
+        { source: 'Gold', bid: formatINR(goldBid), ask: formatINR(goldAsk), bidStatus: 'soft-green', askStatus: 'soft-red' },
+        { source: 'Gold ($)', bid: formatDecimal(marketBaseRates.goldUsd, 2), ask: formatDecimal(marketBaseRates.goldUsd + 0.32, 2), bidStatus: 'soft-red', askStatus: 'soft-red' },
+        { source: 'Silver ($)', bid: formatDecimal(marketBaseRates.silverUsd, 2), ask: formatDecimal(marketBaseRates.silverUsd + 0.02, 2), bidStatus: 'soft-red', askStatus: 'soft-red' },
+        { source: 'INR', bid: '95.05', ask: '95.09', isCurrency: true }
+      ];
+
+      renderBullionRates();
+      renderSpreadTable();
+    }
+
+    function formatDecimal(val, dec = 2) {
+      return Number(val).toLocaleString('en-IN', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+    }
+
+    // Simulated WebSocket / Market Volatility Engine
+    function triggerMarketVolatility() {
+      // Fluctuate raw market spot base rates
+      const deltaGold = (Math.random() > 0.45 ? 1 : -1) * Math.floor(Math.random() * 85 + 10);
+      const deltaSilver = (Math.random() > 0.48 ? 1 : -1) * Math.floor(Math.random() * 110 + 15);
+
+      marketBaseRates.goldInrBase = Math.max(100000, marketBaseRates.goldInrBase + deltaGold);
+      marketBaseRates.silverInrBase = Math.max(150000, marketBaseRates.silverInrBase + deltaSilver);
+      marketBaseRates.goldUsd = Number((marketBaseRates.goldUsd + (deltaGold / 86.5)).toFixed(2));
+      marketBaseRates.silverUsd = Number((marketBaseRates.silverUsd + (deltaSilver / 2680)).toFixed(2));
+
+      computeHybridRates();
+
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById('rateLastUpdatedText').textContent = `Live rate refreshed at ${timeStr}`;
+    }
+
+    // Auto Ticker Every 5.5 Seconds (WebSocket Simulation)
+    setInterval(() => {
+      triggerMarketVolatility();
+    }, 5500);
+
+    // Admin Panel CMS Handlers
+    function toggleAdminPanel() {
+      const adminScreen = document.getElementById('adminScreen');
+      if (adminScreen.classList.contains('active')) {
+        navigateToTab('rates');
+      } else {
+        navigateToTab('admin');
+      }
+    }
+
+    function saveAdminRates() {
+      const goldVal = parseInt(document.getElementById('adminGold999Input').value, 10);
+      const silverBankVal = parseInt(document.getElementById('adminSilverBankInput').value, 10);
+      const kasganjMoharVal = parseInt(document.getElementById('adminKasganjMoharInput').value, 10);
+      const silverCoinVal = parseInt(document.getElementById('adminSilverCoinInput').value, 10);
+      const disclaimerVal = document.getElementById('adminDisclaimerInput').value;
+
+      if (!isNaN(goldVal)) {
+        rateConfigurations.isManualOverride = true;
+        rateConfigurations.overrideGoldRate = goldVal;
+      }
+      if (!isNaN(silverBankVal)) {
+        rateConfigurations.isManualOverride = true;
+        rateConfigurations.overrideSilverRate = silverBankVal;
+      }
+      if (!isNaN(kasganjMoharVal)) {
+        rateConfigurations.localMoharOffset = (goldVal || marketBaseRates.goldInrBase + rateConfigurations.gold999Offset) - kasganjMoharVal;
+      }
+
+      if (disclaimerVal) {
+        rateConfigurations.storeNotice = disclaimerVal;
+        document.getElementById('disclaimerNoticeText').innerHTML = disclaimerVal.replace('We don’t sell bullion.', '<strong>We don’t sell bullion.</strong>');
+      }
+
+      computeHybridRates();
+      alert('Rates broadcasted live! Changes are now reflecting on the main bullion ticker.');
+      navigateToTab('rates');
+    }
+
+    async function fetchAndApplyFreeLiveApi() {
+      const btn = document.getElementById('btnFetchFreeApi');
+      const banner = document.getElementById('liveApiStatusBanner');
+      btn.disabled = true;
+      btn.textContent = 'Fetching from gold-api.com...';
+      banner.textContent = 'Connecting to real-time market API...';
+      banner.style.color = '#C18B27';
+
+      try {
+        const [goldRes, silverRes] = await Promise.all([
+          fetch('https://api.gold-api.com/price/XAU/INR'),
+          fetch('https://api.gold-api.com/price/XAG/INR')
+        ]);
+
+        if (!goldRes.ok || !silverRes.ok) throw new Error('API returned error status');
+
+        const goldData = await goldRes.json();
+        const silverData = await silverRes.json();
+
+        const TROY_OUNCE = 31.1034768;
+        const gold10gInr = Math.round((Number(goldData.price) / TROY_OUNCE) * 10);
+        const silver1kgInr = Math.round((Number(silverData.price) / TROY_OUNCE) * 1000);
+        const usdInr = Number(goldData.exchangeRate) || 95.09;
+
+        // Update inputs
+        document.getElementById('adminGold999Input').value = gold10gInr;
+        document.getElementById('adminSilverBankInput').value = silver1kgInr;
+        document.getElementById('adminKasganjMoharInput').value = gold10gInr - 1200; // Local standard offset
+        document.getElementById('adminSilverCoinInput').value = Math.round(silver1kgInr / 100) + 52;
+
+        banner.innerHTML = `✅ <strong>Connected:</strong> Gold: ₹${formatINR(gold10gInr)}/10g | Silver: ₹${formatINR(silver1kgInr)}/1kg (USD/INR: ${usdInr})`;
+        banner.style.color = '#1E6B37';
+        btn.textContent = '⚡ Re-Fetch Live Market Rates';
+        btn.disabled = false;
+      } catch (err) {
+        console.error('Error fetching live rates:', err);
+        banner.innerHTML = `⚠️ Could not reach external API. Check internet connection.`;
+        banner.style.color = '#B42318';
+        btn.textContent = '⚡ Retry Fetch';
+        btn.disabled = false;
+      }
+    }
+
+    function publishNewJewelleryProduct() {
+      const title = document.getElementById('newProdTitle').value.trim();
+      const sku = document.getElementById('newProdSku').value.trim();
+      const category = document.getElementById('newProdCategory').value;
+      const purity = document.getElementById('newProdPurity').value;
+      const gross = document.getElementById('newProdGrossWeight').value.trim() || '65.200';
+      const net = document.getElementById('newProdNetWeight').value.trim() || '54.100';
+      const diamond = document.getElementById('newProdDiamondWeight').value.trim() || '4.50';
+      const img = document.getElementById('newProdImageUrl').value.trim() || 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1200&q=85';
+      const desc = document.getElementById('newProdDesc').value.trim() || 'Royal handcrafted jewellery by Ramchandra and Sons.';
+
+      if (!title || !sku) {
+        alert('Please fill in both the Product Title and SKU.');
+        return;
+      }
+
+      const newProd = {
+        id: 'rsj-' + Date.now().toString(36),
+        sku: sku,
+        title: title,
+        category: category,
+        collection: 'Gold',
+        gender: 'Female',
+        goldPurity: purity,
+        grossWeight: gross + ' g',
+        netGoldWeight: net + ' g',
+        diamondWeight: diamond + ' ct',
+        colouredStoneWeight: '0 ct',
+        description: desc,
+        availability: 'Available in Showroom',
+        images: [img]
+      };
+
+      jewelleryProducts.unshift(newProd);
+      alert(`Success! "${title}" published to catalog.`);
+      openCategoryCatalog(category);
+    }
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderBullionRates();
+      renderSpreadTable();
+      renderProductGrid();
+
+      // Real-time clock in iPhone status bar
+      setInterval(() => {
+        const now = new Date();
+        document.getElementById('deviceClock').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

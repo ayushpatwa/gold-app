@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function: Check if request is authenticated admin
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    // market_base_rates: Public read, Cloud Ingestion Function / Admin write
+    match /market_base_rates/{rateId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // rate_configurations: Public read, Admin write
+    match /rate_configurations/{configId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // live_bullion_rates: Public read, Cloud Function / Admin write
+    match /live_bullion_rates/{bullionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // live_spread_rates: Public read, Cloud Function / Admin write
+    match /live_spread_rates/{spreadId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // jewellery_products: Public read, Admin write
+    match /jewellery_products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
