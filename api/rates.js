@@ -1,8 +1,15 @@
 // api/rates.js - Real-time Bullion API Endpoint for Vercel
-// Ingests live market data and computes Kasganj Showroom rates with domestic Indian tariffs
+// Integrated with Metals.dev Live API (MCX & IBJA Indian Domestic Rates)
+
+const METALS_DEV_API_KEY = process.env.METALS_DEV_API_KEY || 'RTRSCDVC6TWMUUWHFTVQ955WHFTVQ';
+
+// In-memory cache to conserve API requests and provide sub-second responses
+let cachedRateResponse = null;
+let lastFetchTimestamp = 0;
+const CACHE_DURATION_MS = 45 * 1000; // 45 seconds cache
 
 export default async function handler(req, res) {
-  // Set CORS headers
+  // CORS & Cache-Control headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
@@ -11,86 +18,110 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
+  const now = Date.now();
+
+  // Return cached data if fresh (saves API quota)
+  if (cachedRateResponse && (now - lastFetchTimestamp) < CACHE_DURATION_MS) {
+    return res.status(200).json({
+      ...cachedRateResponse,
+      cached: true,
+      timeRemainingSec: Math.round((CACHE_DURATION_MS - (now - lastFetchTimestamp)) / 1000)
+    });
+  }
+
   try {
-    let goldUsd = 4178.60;
-    let silverUsd = 57.25;
-    let usdInr = 95.10;
+    const url = `https://api.metals.dev/v1/latest?api_key=${METALS_DEV_API_KEY}&currency=INR&unit=g`;
+    const apiRes = await fetch(url, { headers: { 'Accept': 'application/json' } });
 
-    // Fetch live market data from Yahoo Finance / Gold APIs
-    try {
-      const [goldFetch, silverFetch, inrFetch] = await Promise.all([
-        fetch('https://query1.finance.yahoo.com/v8/finance/chart/GC=F?interval=1m&range=1d', {
-          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
-        }),
-        fetch('https://query1.finance.yahoo.com/v8/finance/chart/SI=F?interval=1m&range=1d', {
-          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
-        }),
-        fetch('https://query1.finance.yahoo.com/v8/finance/chart/USDINR=X?interval=1m&range=1d', {
-          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
-        })
-      ]);
-
-      if (goldFetch.ok) {
-        const gj = await goldFetch.json();
-        const price = gj?.chart?.result?.[0]?.meta?.regularMarketPrice;
-        if (price) goldUsd = Number(price);
-      }
-
-      if (silverFetch.ok) {
-        const sj = await silverFetch.json();
-        const price = sj?.chart?.result?.[0]?.meta?.regularMarketPrice;
-        if (price) silverUsd = Number(price);
-      }
-
-      if (inrFetch.ok) {
-        const ij = await inrFetch.json();
-        const price = ij?.chart?.result?.[0]?.meta?.regularMarketPrice;
-        if (price) usdInr = Number(price);
-      }
-    } catch (apiErr) {
-      console.warn('External finance API fallback active:', apiErr.message);
+    if (!apiRes.ok) {
+      throw new Error(`Metals.dev API responded with HTTP ${apiRes.status}`);
     }
 
-    // Standard conversion: 1 Troy Ounce = 31.1034768 grams
-    const TROY_OUNCE_TO_GRAMS = 31.1034768;
+    const data = await apiRes.json();
 
-    // Raw Spot conversion in INR
-    const rawSpotGoldPerGramInr = (goldUsd * usdInr) / TROY_OUNCE_TO_GRAMS;
-    const rawSpotSilverPerKgInr = ((silverUsd * usdInr) / TROY_OUNCE_TO_GRAMS) * 1000;
+    if (data.status !== 'success' || !data.metals) {
+      throw new Error('Metals.dev returned non-success status');
+    }
 
-    // Indian Domestic Tariff & Import Duty factor:
-    // Retail physical bullion traded in Indian mandis reflects customs duty, AIDC, and local freight
-    // Baseline Indian domestic benchmark:
-    const gold10gDomestic = Math.round(rawSpotGoldPerGramInr * 10 * 1.18);
-    const silver1kgDomestic = Math.round(rawSpotSilverPerKgInr * 1.23);
+    const metals = data.metals;
+    const currencies = data.currencies || {};
+    const usdInr = Number(currencies.USD || 94.965);
 
-    // Kasganj Showroom Standard Formulas:
-    // 1. Gold 999 (10 gm)
-    const finalGold999 = gold10gDomestic;
-    // 2. Silver Bank (1 kg)
-    const finalSilverBank = silver1kgDomestic;
+    // 1. Indian Benchmark Gold 999:
+    // Priority: MCX Gold (per gram) -> IBJA Gold -> Spot with 18% duty
+    const goldPerGramInr = metals.mcx_gold || metals.ibja_gold || (metals.gold * 1.18);
+    const finalGold999 = Math.round(goldPerGramInr * 10);
+
+    // 2. Indian Benchmark Silver Bank (1 kg):
+    // Priority: MCX Silver (per gram) * 1000 -> IBJA Silver * 1000 -> Spot with 22% duty
+    const silverPerGramInr = metals.mcx_silver || metals.ibja_silver || (metals.silver * 1.22);
+    const finalSilverBank = Math.round(silverPerGramInr * 1000);
+
     // 3. Kasganj Mohar (10 gm) = Final Gold 999 - Local Mohar Offset (approx ₹2,163)
     const finalKasganjMohar = finalGold999 - 2163;
+
     // 4. Silver Coin 10gm = (Final Silver Bank / 100) + Coin Margin
     const finalSilverCoin10g = Math.round(finalSilverBank / 100) + 52;
 
-    // Bid/Ask Spreads
+    // Global Spot in USD (1 troy ounce = 31.1034768 grams)
+    const TROY_OUNCE = 31.1034768;
+    const goldUsd = Number(((metals.gold * TROY_OUNCE) / usdInr).toFixed(2));
+    const silverUsd = Number(((metals.silver * TROY_OUNCE) / usdInr).toFixed(2));
+
+    // Dynamic Bid / Ask Spreads around market rates
     const spreads = [
-      { source: 'Silver', bid: Math.round(finalSilverBank - 80), ask: Math.round(finalSilverBank + 80), bidStatus: 'soft-red', askStatus: 'soft-green' },
-      { source: 'Gold', bid: Math.round(finalGold999 - 52), ask: Math.round(finalGold999 + 52), bidStatus: 'soft-green', askStatus: 'soft-red' },
-      { source: 'Gold ($)', bid: goldUsd.toFixed(2), ask: (goldUsd + 0.35).toFixed(2), bidStatus: 'soft-red', askStatus: 'soft-red' },
-      { source: 'Silver ($)', bid: silverUsd.toFixed(2), ask: (silverUsd + 0.03).toFixed(2), bidStatus: 'soft-red', askStatus: 'soft-red' },
-      { source: 'INR', bid: (usdInr - 0.04).toFixed(2), ask: (usdInr + 0.04).toFixed(2), isCurrency: true }
+      {
+        source: 'Silver',
+        bid: Math.round(finalSilverBank - 80),
+        ask: Math.round(finalSilverBank + 80),
+        bidStatus: 'soft-red',
+        askStatus: 'soft-green'
+      },
+      {
+        source: 'Gold',
+        bid: Math.round(finalGold999 - 52),
+        ask: Math.round(finalGold999 + 52),
+        bidStatus: 'soft-green',
+        askStatus: 'soft-red'
+      },
+      {
+        source: 'Gold ($)',
+        bid: goldUsd.toFixed(2),
+        ask: (goldUsd + 0.35).toFixed(2),
+        bidStatus: 'soft-red',
+        askStatus: 'soft-red'
+      },
+      {
+        source: 'Silver ($)',
+        bid: silverUsd.toFixed(2),
+        ask: (silverUsd + 0.03).toFixed(2),
+        bidStatus: 'soft-red',
+        askStatus: 'soft-red'
+      },
+      {
+        source: 'INR',
+        bid: (usdInr - 0.04).toFixed(2),
+        ask: (usdInr + 0.04).toFixed(2),
+        isCurrency: true
+      }
     ];
 
-    return res.status(200).json({
+    const responsePayload = {
       success: true,
+      provider: 'Metals.dev (MCX & IBJA Indian Feed)',
       timestamp: new Date().toISOString(),
-      formattedTime: new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+      formattedTime: new Date().toLocaleTimeString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      }),
       market: {
         goldUsd,
         silverUsd,
-        usdInr
+        usdInr: Number(usdInr.toFixed(2)),
+        mcxGoldPerGram: Number(goldPerGramInr.toFixed(2)),
+        mcxSilverPerGram: Number(silverPerGramInr.toFixed(2))
       },
       rates: {
         gold999: finalGold999,
@@ -99,8 +130,28 @@ export default async function handler(req, res) {
         silverCoin10g: finalSilverCoin10g
       },
       spreads
+    };
+
+    // Update in-memory cache
+    cachedRateResponse = responsePayload;
+    lastFetchTimestamp = now;
+
+    return res.status(200).json({
+      ...responsePayload,
+      cached: false
     });
   } catch (error) {
+    console.error('Metals.dev API error:', error.message);
+
+    // If cache exists from earlier, serve stale cache instead of failing
+    if (cachedRateResponse) {
+      return res.status(200).json({
+        ...cachedRateResponse,
+        stale: true,
+        error: error.message
+      });
+    }
+
     return res.status(500).json({ success: false, error: error.message });
   }
 }
