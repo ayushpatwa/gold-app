@@ -2379,41 +2379,113 @@
       return Number(val).toLocaleString('en-IN', { minimumFractionDigits: dec, maximumFractionDigits: dec });
     }
 
-    // Live Real-Time Market Rate Engine
+    // Live Real-Time Market Rate Engine (Integrated with Metals.dev MCX & IBJA Feed)
+    const USER_METALS_DEV_KEY = 'RTRSCDVC6TWMUUWHFTVQ955WHFTVQ';
     let isFetchingLiveRates = false;
 
-    async function fetchRealMarketRates(showVisualFeedback = false) {
+    async function fetchRealMarketRates(forceRefresh = false) {
       if (isFetchingLiveRates) return;
       isFetchingLiveRates = true;
 
       const updatedLabel = document.getElementById('rateLastUpdatedText');
-      if (showVisualFeedback && updatedLabel) {
-        updatedLabel.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 4px;">🔄 Fetching real live market rates...</span>`;
+      if (forceRefresh && updatedLabel) {
+        updatedLabel.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 4px;">🔄 Fetching live MCX & IBJA rates...</span>`;
       }
 
       try {
         let apiData = null;
-        try {
-          const res = await fetch('/api/rates');
-          if (res.ok) {
-            apiData = await res.json();
-          }
-        } catch (e) {
-          console.warn('Vercel /api/rates not directly reachable, trying public endpoint');
+
+        // Check local cache first (valid for 5 mins) to conserve user's 100 monthly requests
+        const cachedRaw = localStorage.getItem('rsj_metals_dev_cache');
+        const now = Date.now();
+        if (!forceRefresh && cachedRaw) {
+          try {
+            const parsed = JSON.parse(cachedRaw);
+            if (now - parsed.timestamp < 300000 && parsed.rates) {
+              apiData = parsed;
+            }
+          } catch(e) {}
         }
 
-        if (apiData && apiData.success) {
+        if (!apiData) {
+          // 1. Try our serverless /api/rates endpoint
+          try {
+            const res = await fetch('/api/rates');
+            if (res.ok) {
+              const json = await res.json();
+              if (json && json.success) apiData = json;
+            }
+          } catch (e) {
+            console.warn('Serverless endpoint fetch failed, trying direct Metals.dev');
+          }
+
+          // 2. Direct browser fallback using user's Metals.dev API key
+          if (!apiData) {
+            try {
+              const directRes = await fetch(`https://api.metals.dev/v1/latest?api_key=${USER_METALS_DEV_KEY}&currency=INR&unit=g`);
+              if (directRes.ok) {
+                const md = await directRes.json();
+                if (md.status === 'success' && md.metals) {
+                  const m = md.metals;
+                  const c = md.currencies || {};
+                  const usdInr = Number(c.USD || 94.965);
+                  const goldG = m.mcx_gold || m.ibja_gold || (m.gold * 1.18);
+                  const silverG = m.mcx_silver || m.ibja_silver || (m.silver * 1.22);
+                  const g999 = Math.round(goldG * 10);
+                  const sBank = Math.round(silverG * 1000);
+                  const kMohar = g999 - 2163;
+                  const sCoin = Math.round(sBank / 100) + 52;
+                  const TROY = 31.1034768;
+
+                  apiData = {
+                    success: true,
+                    provider: 'Metals.dev (MCX & IBJA Indian Feed)',
+                    timestamp: now,
+                    formattedTime: new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                    market: {
+                      goldUsd: Number(((m.gold * TROY) / usdInr).toFixed(2)),
+                      silverUsd: Number(((m.silver * TROY) / usdInr).toFixed(2)),
+                      usdInr: Number(usdInr.toFixed(2))
+                    },
+                    rates: {
+                      gold999: g999,
+                      silverBank: sBank,
+                      kasganjMohar: kMohar,
+                      silverCoin10g: sCoin
+                    },
+                    spreads: [
+                      { source: 'Silver', bid: sBank - 80, ask: sBank + 80, bidStatus: 'soft-red', askStatus: 'soft-green' },
+                      { source: 'Gold', bid: g999 - 52, ask: g999 + 52, bidStatus: 'soft-green', askStatus: 'soft-red' },
+                      { source: 'Gold ($)', bid: ((m.gold * TROY) / usdInr).toFixed(2), ask: (((m.gold * TROY) / usdInr) + 0.35).toFixed(2), bidStatus: 'soft-red', askStatus: 'soft-red' },
+                      { source: 'Silver ($)', bid: ((m.silver * TROY) / usdInr).toFixed(2), ask: (((m.silver * TROY) / usdInr) + 0.03).toFixed(2), bidStatus: 'soft-red', askStatus: 'soft-red' },
+                      { source: 'INR', bid: (usdInr - 0.04).toFixed(2), ask: (usdInr + 0.04).toFixed(2), isCurrency: true }
+                    ]
+                  };
+                }
+              }
+            } catch (mdErr) {
+              console.error('Direct Metals.dev fetch error:', mdErr);
+            }
+          }
+
+          if (apiData) {
+            localStorage.setItem('rsj_metals_dev_cache', JSON.stringify({ ...apiData, timestamp: now }));
+          }
+        }
+
+        if (apiData && apiData.rates) {
           const finalGold = Number(apiData.rates.gold999);
           const finalSilver = Number(apiData.rates.silverBank);
           const finalMohar = Number(apiData.rates.kasganjMohar);
           const finalCoin = Number(apiData.rates.silverCoin10g);
 
-          // Update internal base rates
           marketBaseRates.goldInrBase = finalGold - rateConfigurations.gold999Offset;
           marketBaseRates.silverInrBase = finalSilver - rateConfigurations.silverBankOffset;
-          marketBaseRates.goldUsd = Number(apiData.market.goldUsd);
-          marketBaseRates.silverUsd = Number(apiData.market.silverUsd);
-          marketBaseRates.usdInr = Number(apiData.market.usdInr);
+          if (apiData.market) {
+            marketBaseRates.goldUsd = Number(apiData.market.goldUsd);
+            marketBaseRates.silverUsd = Number(apiData.market.silverUsd);
+            marketBaseRates.usdInr = Number(apiData.market.usdInr);
+          }
 
           function trackDelta(id, current, defaultPrevDiff) {
             const prev = previousRatesMap[id] !== undefined ? previousRatesMap[id] : (current - defaultPrevDiff);
@@ -2450,10 +2522,9 @@
           renderSpreadTable();
 
           if (updatedLabel) {
-            updatedLabel.innerHTML = `🟢 Live Market Feed · Synced at <strong>${apiData.formattedTime}</strong>`;
+            updatedLabel.innerHTML = `🟢 <strong>Metals.dev (MCX / IBJA Live)</strong> · Synced at <strong>${apiData.formattedTime || 'Just now'}</strong>`;
           }
 
-          // Populate Store Manager CMS inputs
           const inputGold = document.getElementById('adminGold999Input');
           if (inputGold) inputGold.value = finalGold;
           const inputSilver = document.getElementById('adminSilverBankInput');
@@ -2462,9 +2533,6 @@
           if (inputMohar) inputMohar.value = finalMohar;
           const inputCoin = document.getElementById('adminSilverCoinInput');
           if (inputCoin) inputCoin.value = finalCoin;
-        } else {
-          // Direct fallback to free API
-          await fetchAndApplyFreeLiveApi(false);
         }
       } catch (err) {
         console.error('Error in fetchRealMarketRates:', err);
