@@ -2440,13 +2440,15 @@
       navigateToTab('rates');
     }
 
-    async function fetchAndApplyFreeLiveApi() {
+    async function fetchAndApplyFreeLiveApi(interactive = true) {
       const btn = document.getElementById('btnFetchFreeApi');
       const banner = document.getElementById('liveApiStatusBanner');
-      btn.disabled = true;
-      btn.textContent = 'Fetching from gold-api.com...';
-      banner.textContent = 'Connecting to real-time market API...';
-      banner.style.color = '#C18B27';
+      if (interactive && btn && banner) {
+        btn.disabled = true;
+        btn.textContent = 'Fetching from gold-api.com...';
+        banner.textContent = 'Connecting to real-time market API...';
+        banner.style.color = '#C18B27';
+      }
 
       try {
         const [goldRes, silverRes] = await Promise.all([
@@ -2464,22 +2466,46 @@
         const silver1kgInr = Math.round((Number(silverData.price) / TROY_OUNCE) * 1000);
         const usdInr = Number(goldData.exchangeRate) || 95.09;
 
-        // Update inputs
-        document.getElementById('adminGold999Input').value = gold10gInr;
-        document.getElementById('adminSilverBankInput').value = silver1kgInr;
-        document.getElementById('adminKasganjMoharInput').value = gold10gInr - 1200; // Local standard offset
-        document.getElementById('adminSilverCoinInput').value = Math.round(silver1kgInr / 100) + 52;
+        // Update live base rates with real market data
+        marketBaseRates.goldInrBase = gold10gInr - rateConfigurations.gold999Offset;
+        marketBaseRates.silverInrBase = silver1kgInr - rateConfigurations.silverBankOffset;
+        marketBaseRates.goldUsd = Number((Number(goldData.price) / usdInr).toFixed(2));
+        marketBaseRates.silverUsd = Number((Number(silverData.price) / usdInr).toFixed(2));
+        marketBaseRates.usdInr = usdInr;
 
-        banner.innerHTML = `✅ <strong>Connected:</strong> Gold: ₹${formatINR(gold10gInr)}/10g | Silver: ₹${formatINR(silver1kgInr)}/1kg (USD/INR: ${usdInr})`;
-        banner.style.color = '#1E6B37';
-        btn.textContent = '⚡ Re-Fetch Live Market Rates';
-        btn.disabled = false;
+        // Recompute all display cards (Gold 999, Silver Bank, Kasganj Mohar, 10g Coin, Spreads)
+        computeHybridRates();
+
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const updatedLabel = document.getElementById('rateLastUpdatedText');
+        if (updatedLabel) {
+          updatedLabel.textContent = `Live market API synced at ${timeStr}`;
+        }
+
+        // Update inputs in Store Manager CMS if present
+        const inputGold = document.getElementById('adminGold999Input');
+        if (inputGold) inputGold.value = gold10gInr;
+        const inputSilver = document.getElementById('adminSilverBankInput');
+        if (inputSilver) inputSilver.value = silver1kgInr;
+        const inputMohar = document.getElementById('adminKasganjMoharInput');
+        if (inputMohar) inputMohar.value = gold10gInr - 1200;
+        const inputCoin = document.getElementById('adminSilverCoinInput');
+        if (inputCoin) inputCoin.value = Math.round(silver1kgInr / 100) + 52;
+
+        if (interactive && banner && btn) {
+          banner.innerHTML = `✅ <strong>Connected:</strong> Gold: ₹${formatINR(gold10gInr)}/10g | Silver: ₹${formatINR(silver1kgInr)}/1kg (USD/INR: ${usdInr})`;
+          banner.style.color = '#1E6B37';
+          btn.textContent = '⚡ Re-Fetch Live Market Rates';
+          btn.disabled = false;
+        }
       } catch (err) {
         console.error('Error fetching live rates:', err);
-        banner.innerHTML = `⚠️ Could not reach external API. Check internet connection.`;
-        banner.style.color = '#B42318';
-        btn.textContent = '⚡ Retry Fetch';
-        btn.disabled = false;
+        if (interactive && banner && btn) {
+          banner.innerHTML = `⚠️ Could not reach external API. Check internet connection.`;
+          banner.style.color = '#B42318';
+          btn.textContent = '⚡ Retry Fetch';
+          btn.disabled = false;
+        }
       }
     }
 
@@ -2526,6 +2552,14 @@
       renderBullionRates();
       renderSpreadTable();
       renderProductGrid();
+
+      // Automatically fetch real live market rates on startup
+      fetchAndApplyFreeLiveApi(false);
+
+      // Periodically refresh real rates from gold-api.com every 60 seconds
+      setInterval(() => {
+        fetchAndApplyFreeLiveApi(false);
+      }, 60000);
 
       // Real-time clock in iPhone status bar
       setInterval(() => {
