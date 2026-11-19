@@ -1,5 +1,6 @@
 // api/angelone.js - Angel One SmartAPI Connector with Automated TOTP Login
 import crypto from 'crypto';
+import https from 'https';
 
 // Pure JavaScript RFC 6238 TOTP Generator (Zero external dependencies)
 function base32Decode(base32) {
@@ -45,22 +46,54 @@ let sessionState = {
   expiresAt: 0
 };
 
-// Fetch helper with optional Fixie Proxy support
-async function smartApiFetch(url, options = {}) {
+// Fetch helper with full Fixie Proxy support (using https.request + HttpsProxyAgent)
+async function smartApiFetch(urlStr, options = {}) {
   const fixieUrl = process.env.FIXIE_URL;
-  let fetchOptions = { ...options };
 
+  // 1. If Fixie Proxy is configured (Production Vercel)
   if (fixieUrl && fixieUrl.trim() !== '') {
-    try {
-      const { HttpsProxyAgent } = await import('https-proxy-agent');
-      const agent = new HttpsProxyAgent(fixieUrl.trim());
-      fetchOptions.agent = agent;
-    } catch {
-      // https-proxy-agent optional
-    }
+    const { HttpsProxyAgent } = await import('https-proxy-agent');
+    const agent = new HttpsProxyAgent(fixieUrl.trim());
+
+    return new Promise((resolve, reject) => {
+      const parsedUrl = new URL(urlStr);
+      const reqOptions = {
+        hostname: parsedUrl.hostname,
+        port: parsedUrl.port || 443,
+        path: parsedUrl.pathname + parsedUrl.search,
+        method: options.method || 'GET',
+        headers: options.headers || {},
+        agent: agent
+      };
+
+      const req = https.request(reqOptions, (res) => {
+        let data = '';
+        res.on('data', (chunk) => (data += chunk));
+        res.on('end', () => {
+          resolve({
+            ok: res.statusCode >= 200 && res.statusCode < 300,
+            status: res.statusCode,
+            json: async () => {
+              try {
+                return JSON.parse(data);
+              } catch {
+                return { status: false, message: data };
+              }
+            }
+          });
+        });
+      });
+
+      req.on('error', reject);
+      if (options.body) {
+        req.write(typeof options.body === 'string' ? options.body : JSON.stringify(options.body));
+      }
+      req.end();
+    });
   }
 
-  return await fetch(url, fetchOptions);
+  // 2. Direct connection (Localhost / Router IP)
+  return await fetch(urlStr, options);
 }
 
 // 1. Generate Session / Login using TOTP
