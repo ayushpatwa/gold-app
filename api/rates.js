@@ -1,12 +1,14 @@
 // api/rates.js - Real-time Bullion API Endpoint for Vercel
-// Integrated with Metals.dev Live API (MCX & IBJA Indian Domestic Rates)
+// Supports Angel One SmartAPI (Live MCX) with fallback to Metals.dev
+
+import { fetchAngelOneCommodities } from './angelone.js';
 
 const METALS_DEV_API_KEY = process.env.METALS_DEV_API_KEY || 'RTRSCDVC6TWMUUWHFTVQ955WHFTVQ';
 
 // In-memory cache to conserve API requests and provide sub-second responses
 let cachedRateResponse = null;
 let lastFetchTimestamp = 0;
-const CACHE_DURATION_MS = 45 * 1000; // 45 seconds cache
+const CACHE_DURATION_MS = 30 * 1000; // 30 seconds cache
 
 export default async function handler(req, res) {
   // CORS & Cache-Control headers
@@ -21,7 +23,7 @@ export default async function handler(req, res) {
   const now = Date.now();
 
   // Return cached data if fresh (saves API quota)
-  if (cachedRateResponse && (now - lastFetchTimestamp) < CACHE_DURATION_MS) {
+  if (cachedRateResponse && now - lastFetchTimestamp < CACHE_DURATION_MS) {
     return res.status(200).json({
       ...cachedRateResponse,
       cached: true,
@@ -29,16 +31,118 @@ export default async function handler(req, res) {
     });
   }
 
+  // --- 1. Try Angel One SmartAPI (Primary if configured) ---
+  const hasAngelConfig =
+    Boolean(process.env.ANGEL_API_KEY) &&
+    Boolean(process.env.ANGEL_CLIENT_CODE) &&
+    Boolean(process.env.ANGEL_MPIN) &&
+    Boolean(process.env.ANGEL_TOTP_SECRET);
+
+  if (hasAngelConfig) {
+    try {
+      const { gold, silver } = await fetchAngelOneCommodities();
+
+      if (gold && silver && gold.ltp && silver.ltp) {
+        // MCX Gold is priced per 10 grams
+        const finalGold999 = Math.round(Number(gold.ltp));
+        // MCX Silver is priced per 1 kilogram
+        const finalSilverBank = Math.round(Number(silver.ltp));
+        // Kasganj Mohar: Local Mohar Offset (approx ₹2,163)
+        const finalKasganjMohar = finalGold999 - 2163;
+        // Silver Coin 10gm: (Silver Bank / 100) + Coin Margin
+        const finalSilverCoin10g = Math.round(finalSilverBank / 100) + 52;
+
+        // Depth-based or standard bid/ask spreads
+        const goldBestBid = gold.depth?.buy?.[0]?.price || finalGold999 - 52;
+        const goldBestAsk = gold.depth?.sell?.[0]?.price || finalGold999 + 52;
+        const silverBestBid = silver.depth?.buy?.[0]?.price || finalSilverBank - 80;
+        const silverBestAsk = silver.depth?.sell?.[0]?.price || finalSilverBank + 80;
+
+        const spreads = [
+          {
+            source: 'Silver',
+            bid: Math.round(silverBestBid),
+            ask: Math.round(silverBestAsk),
+            bidStatus: 'soft-red',
+            askStatus: 'soft-green'
+          },
+          {
+            source: 'Gold',
+            bid: Math.round(goldBestBid),
+            ask: Math.round(goldBestAsk),
+            bidStatus: 'soft-green',
+            askStatus: 'soft-red'
+          },
+          {
+            source: 'Gold ($)',
+            bid: (finalGold999 / 35.5).toFixed(2),
+            ask: (finalGold999 / 35.5 + 0.35).toFixed(2),
+            bidStatus: 'soft-red',
+            askStatus: 'soft-red'
+          },
+          {
+            source: 'Silver ($)',
+            bid: (finalSilverBank / 3750).toFixed(2),
+            ask: (finalSilverBank / 3750 + 0.03).toFixed(2),
+            bidStatus: 'soft-red',
+            askStatus: 'soft-red'
+          },
+          {
+            source: 'INR',
+            bid: '94.92',
+            ask: '95.00',
+            isCurrency: true
+          }
+        ];
+
+        const responsePayload = {
+          success: true,
+          provider: 'Angel One SmartAPI (MCX Live Exchange)',
+          timestamp: new Date().toISOString(),
+          formattedTime: new Date().toLocaleTimeString('en-IN', {
+            timeZone: 'Asia/Kolkata',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+          }),
+          market: {
+            mcxGoldSymbol: gold.tradingSymbol || 'GOLD',
+            mcxSilverSymbol: silver.tradingSymbol || 'SILVER',
+            mcxGoldLtp: finalGold999,
+            mcxSilverLtp: finalSilverBank
+          },
+          rates: {
+            gold999: finalGold999,
+            silverBank: finalSilverBank,
+            kasganjMohar: finalKasganjMohar,
+            silverCoin10g: finalSilverCoin10g
+          },
+          spreads
+        };
+
+        cachedRateResponse = responsePayload;
+        lastFetchTimestamp = now;
+
+        return res.status(200).json({
+          ...responsePayload,
+          cached: false
+        });
+      }
+    } catch (err) {
+      console.warn('Angel One fetch failed, falling back to Metals.dev:', err.message);
+    }
+  }
+
+  // --- 2. Fallback to Metals.dev ---
   try {
     const url = `https://api.metals.dev/v1/latest?api_key=${METALS_DEV_API_KEY}&currency=INR&unit=g`;
-    const apiRes = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    const apiRes = await fetch(url, { headers: { Accept: 'application/json' } });
 
     if (!apiRes.ok) {
       throw new Error(`Metals.dev API responded with HTTP ${apiRes.status}`);
     }
 
     const data = await apiRes.json();
-
     if (data.status !== 'success' || !data.metals) {
       throw new Error('Metals.dev returned non-success status');
     }
@@ -47,28 +151,19 @@ export default async function handler(req, res) {
     const currencies = data.currencies || {};
     const usdInr = Number(currencies.USD || 94.965);
 
-    // 1. Indian Benchmark Gold 999:
-    // Priority: MCX Gold (per gram) -> IBJA Gold -> Spot with 18% duty
-    const goldPerGramInr = metals.mcx_gold || metals.ibja_gold || (metals.gold * 1.18);
+    const goldPerGramInr = metals.mcx_gold || metals.ibja_gold || metals.gold * 1.18;
     const finalGold999 = Math.round(goldPerGramInr * 10);
 
-    // 2. Indian Benchmark Silver Bank (1 kg):
-    // Priority: MCX Silver (per gram) * 1000 -> IBJA Silver * 1000 -> Spot with 22% duty
-    const silverPerGramInr = metals.mcx_silver || metals.ibja_silver || (metals.silver * 1.22);
+    const silverPerGramInr = metals.mcx_silver || metals.ibja_silver || metals.silver * 1.22;
     const finalSilverBank = Math.round(silverPerGramInr * 1000);
 
-    // 3. Kasganj Mohar (10 gm) = Final Gold 999 - Local Mohar Offset (approx ₹2,163)
     const finalKasganjMohar = finalGold999 - 2163;
-
-    // 4. Silver Coin 10gm = (Final Silver Bank / 100) + Coin Margin
     const finalSilverCoin10g = Math.round(finalSilverBank / 100) + 52;
 
-    // Global Spot in USD (1 troy ounce = 31.1034768 grams)
     const TROY_OUNCE = 31.1034768;
     const goldUsd = Number(((metals.gold * TROY_OUNCE) / usdInr).toFixed(2));
     const silverUsd = Number(((metals.silver * TROY_OUNCE) / usdInr).toFixed(2));
 
-    // Dynamic Bid / Ask Spreads around market rates
     const spreads = [
       {
         source: 'Silver',
@@ -108,7 +203,7 @@ export default async function handler(req, res) {
 
     const responsePayload = {
       success: true,
-      provider: 'Metals.dev (MCX & IBJA Indian Feed)',
+      provider: 'Metals.dev (Fallback MCX & IBJA Indian Feed)',
       timestamp: new Date().toISOString(),
       formattedTime: new Date().toLocaleTimeString('en-IN', {
         timeZone: 'Asia/Kolkata',
@@ -132,7 +227,6 @@ export default async function handler(req, res) {
       spreads
     };
 
-    // Update in-memory cache
     cachedRateResponse = responsePayload;
     lastFetchTimestamp = now;
 
@@ -141,9 +235,8 @@ export default async function handler(req, res) {
       cached: false
     });
   } catch (error) {
-    console.error('Metals.dev API error:', error.message);
+    console.error('Rates API error:', error.message);
 
-    // If cache exists from earlier, serve stale cache instead of failing
     if (cachedRateResponse) {
       return res.status(200).json({
         ...cachedRateResponse,

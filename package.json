@@ -4,6 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "start": "node server.js",
+    "test-angel": "node scripts/test-angel.js",
     "build": "echo 'Build ok'"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "https-proxy-agent": "^7.0.6",
+    "otplib": "^12.0.1"
   }
 }
